@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const studentSchema = new mongoose.Schema(
   {
@@ -25,5 +27,15 @@ const studentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+studentSchema.methods.isValidPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+studentSchema.methods.generateToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
 
 module.exports = mongoose.model('Student', studentSchema);

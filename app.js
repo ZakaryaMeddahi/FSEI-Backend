@@ -1,10 +1,14 @@
 const express = require('express');
+require('dotenv').config();
 
 const app = express();
 
+// Import middlewares
+const errorHandler = require('./middlewares/error.middleware');
+
 // Import routers
 const authRouter = require('./routes/auth.router');
-const { connect } = require('mongoose');
+const connectDB = require('./db/connect');
 
 // Constants
 const PORT = process.env.PORT || 8080;
@@ -20,9 +24,11 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+app.use(errorHandler);
+
 app.listen(PORT, async () => {
   try {
-    await connect(URI);
+    await connectDB(URI);
     console.log(`Server is running on port ${PORT}`);
   } catch (error) {
     console.error(error);
