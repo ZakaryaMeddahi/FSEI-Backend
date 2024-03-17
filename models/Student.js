@@ -28,6 +28,11 @@ const studentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+studentSchema.pre('save', async function () {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
 studentSchema.methods.isValidPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };

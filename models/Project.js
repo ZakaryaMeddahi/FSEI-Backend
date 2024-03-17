@@ -14,6 +14,10 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    tags: {
+      type: [String],
+      default: [],
+    },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Student',
