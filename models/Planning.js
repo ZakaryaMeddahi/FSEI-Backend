@@ -10,9 +10,15 @@ const planningSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Image Link is required'],
     },
-    description: {
+    level: {
       type: String,
-      default: 'No description',
+      enum: ['L1', 'L2', 'L3', 'M1', 'M2'],
+      required: [true, 'Collection level is required'],
+    },
+    semester: {
+      type: String,
+      enum: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
+      required: [true, 'Collection semester is required'],
     },
     // authorId: {
     //   type: mongoose.Types.ObjectId,
