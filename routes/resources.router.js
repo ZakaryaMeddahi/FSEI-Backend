@@ -9,3 +9,5 @@ const {
 
 router.route('/').get(getAllResources).post(createResource);
 router.route('/:id').get(getResource).patch(updateResource).delete(deleteResource);
+
+module.exports = router;
