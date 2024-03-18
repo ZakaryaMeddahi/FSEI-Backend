@@ -5,7 +5,10 @@ const errorHandler = (err, req, res, next) => {
   };
 
   if (err.name === 'BadRequestError') {
-    customError.message = err.message.split(',').map((msg) => msg.trim());
+    const messages = err.message.split(',');
+    messages.length > 1
+      ? (customError.message = messages.map((msg) => msg.trim()))
+      : (customError.message = messages[0]);
   }
 
   res
