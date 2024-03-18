@@ -37,7 +37,7 @@ const getAnnouncement = async (req, res, next) => {
 const createAnnouncement = async (req, res, next) => {
   try {
     const { body } = req;
-    const newAnnouncement = Announcement.create(body);
+    const newAnnouncement = Announcement(body);
     const announcement = await newAnnouncement.save();
     res.status(201).json({
       status: 'success',
@@ -62,8 +62,8 @@ const updateAnnouncement = async (req, res, next) => {
 
     // planning.set(body)
 
-    announcement.imgLink = body.imgLink;
-    announcement.redirectUrl = body.redirectUrl;
+    announcement.imgLink = body.imgLink || announcement.imgLink;
+    announcement.redirectUrl = body.redirectUrl || announcement.redirectUrl;
 
     const updatedAnnouncement = await announcement.save();
     res.status(200).json({
@@ -85,11 +85,10 @@ const deleteAnnouncement = async (req, res, next) => {
       const error = new NotFoundError('Announcement not found');
       return next(error);
     }
-    await announcement.deleteOne({ id });
+    await announcement.deleteOne({ _id: id });
     res.status(200).json({
       status: 'success',
       message: 'Announcement deleted successfully',
-      data: announcement,
     });
   } catch (error) {
     console.error(error);

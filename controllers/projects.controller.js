@@ -37,7 +37,8 @@ const getProject = async (req, res, next) => {
 const createProject = async (req, res, next) => {
   try {
     const { body } = req;
-    const newProject = Project.create(body);
+    const { id } = req.user;
+    const newProject = Project({ ...body, authorId: id });
     const project = await newProject.save();
     res.status(201).json({
       status: 'success',
@@ -62,9 +63,9 @@ const updateProject = async (req, res, next) => {
 
     // project.set(body)
 
-    project.name = body.name;
-    project.description = body.description;
-    project.imgLink = body.imgLink;
+    project.name = body.name || project.name;
+    project.description = body.description || project.description;
+    project.imgLink = body.imgLink || project.imgLink;
 
     const updatedProject = await project.save();
     res.status(200).json({
@@ -86,11 +87,10 @@ const deleteProject = async (req, res, next) => {
       const error = new NotFoundError('Project not found');
       return next(error);
     }
-    await Project.deleteOne({ id });
+    await Project.deleteOne({ _id: id });
     res.status(200).json({
       status: 'success',
       message: 'Project deleted successfully',
-      data: project,
     });
   } catch (error) {
     console.error(error);

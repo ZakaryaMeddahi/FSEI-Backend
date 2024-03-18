@@ -1,9 +1,39 @@
+const generatePassword = require('../helpers/generatePassword');
+const sendEmail = require('../helpers/sendEmail');
 const Student = require('../models/Student');
 const { NotFoundError } = require('../utils/errors');
 
 const getAllStudents = async (req, res, next) => {
   try {
-    const students = await Student.find();
+    const { name, email, registrationN } = req.query;
+    const [firstName, lastName] = name?.split(' ') || [];
+    let queryParams = {};
+    console.log(lastName);
+    if (firstName) {
+      queryParams['$or'] = [
+        { firstName: { $regex: firstName, $options: 'i' } },
+        { lastName: { $regex: firstName, $options: 'i' } },
+      ];
+    }
+    if (lastName) {
+      queryParams['$or'] = [
+        { lastName: { $regex: lastName, $options: 'i' } },
+        { firstName: { $regex: lastName, $options: 'i' } },
+      ];
+    }
+    if (email) {
+      queryParams['$or'] = [
+        ...queryParams['$or'],
+        { email: { $regex: email, $options: 'i' } },
+      ];
+    }
+    if (registrationN) {
+      queryParams['$or'] = [
+        ...queryParams['$or'],
+        { registrationNumber: { $regex: registrationN, $options: 'i' } },
+      ];
+    }
+    const students = await Student.find(queryParams);
     res.status(200).json({
       status: 'success',
       message: 'Students retrieved successfully',
@@ -37,9 +67,14 @@ const getStudent = async (req, res, next) => {
 const createStudent = async (req, res, next) => {
   try {
     const { body } = req;
-    const newStudent = Student.create(body);
+    const password = generatePassword();
+    const newStudent = Student({
+      ...body,
+      password,
+    });
     const student = await newStudent.save();
     // Send an email to student contain generated password
+    sendEmail({ email: student.email, password });
     res.status(201).json({
       status: 'success',
       message: 'Student created successfully',
@@ -63,13 +98,14 @@ const updateStudent = async (req, res, next) => {
 
     // Student.set(body)
 
-    student.firstName = body.firstName;
-    student.lastName = body.imgLink;
-    student.registrationNumber = body.registrationNumber;
-    student.email = body.email;
-    student.password = body.password;
+    student.firstName = body.firstName || student.firstName;
+    student.lastName = body.imgLink || student.lastName;
+    student.registrationNumber =
+      body.registrationNumber || student.registrationNumber;
+    student.email = body.email || student.email;
+    student.password = body.password || student.password;
 
-    const updatedStudent = await Student.save();
+    const updatedStudent = await student.save();
     res.status(200).json({
       status: 'success',
       message: 'Student updated successfully',
@@ -89,11 +125,11 @@ const deleteStudent = async (req, res, next) => {
       const error = new NotFoundError('Student not found');
       return next(error);
     }
-    await Student.deleteOne({ id });
+    console.log(id);
+    await Student.deleteOne({ _id: id });
     res.status(200).json({
       status: 'success',
       message: 'Student deleted successfully',
-      data: student,
     });
   } catch (error) {
     console.error(error);

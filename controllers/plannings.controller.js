@@ -3,7 +3,16 @@ const { NotFoundError } = require('../utils/errors');
 
 const getAllPlannings = async (req, res, next) => {
   try {
-    const plannings = await Planning.find();
+    const { fieldId } = req.params;
+    const { level, semester } = req.query;
+    let queryParams = {};
+    if (level) {
+      queryParams.level = level;
+    }
+    if (semester) {
+      queryParams.semester = semester;
+    }
+    const plannings = await Planning.find({ ...queryParams, fieldId });
     res.status(200).json({
       status: 'success',
       message: 'Plannings retrieved successfully',
@@ -36,8 +45,11 @@ const getPlanning = async (req, res, next) => {
 
 const createPlanning = async (req, res, next) => {
   try {
-    const { body } = req;
-    const newPlanning = Planning.create(body);
+    const {
+      body,
+      params: { fieldId },
+    } = req;
+    const newPlanning = Planning({ ...body, fieldId });
     const planning = await newPlanning.save();
     res.status(201).json({
       status: 'success',
@@ -62,10 +74,10 @@ const updatePlanning = async (req, res, next) => {
 
     // planning.set(body)
 
-    planning.title = body.title;
-    planning.imgLink = body.imgLink;
-    planning.level = body.level;
-    planning.semester = body.semester;
+    planning.title = body.title || planning.title;
+    planning.imgLink = body.imgLink || planning.imgLink;
+    planning.level = body.level || planning.level;
+    planning.semester = body.semester || planning.semester;
 
     const updatedPlanning = await planning.save();
     res.status(200).json({
@@ -87,11 +99,10 @@ const deletePlanning = async (req, res, next) => {
       const error = new NotFoundError('Planning not found');
       return next(error);
     }
-    await planning.deleteOne({ id });
+    await planning.deleteOne({ _id: id });
     res.status(200).json({
       status: 'success',
       message: 'Planning deleted successfully',
-      data: planning,
     });
   } catch (error) {
     console.error(error);

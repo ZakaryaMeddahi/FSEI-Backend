@@ -28,7 +28,7 @@ const login = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Logged successfully',
+      message: 'Logged in successfully',
       data: { student, token },
     });
   } catch (error) {

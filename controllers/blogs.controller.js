@@ -3,6 +3,11 @@ const { NotFoundError } = require('../utils/errors');
 
 const getAllBlogs = async (req, res, next) => {
   try {
+    const { title } = req.query;
+    let queryParams = {};
+    if (title) {
+      queryParams.title = new RegExp(title, 'i');
+    }
     const blogs = await Blog.find();
     res.status(200).json({
       status: 'success',
@@ -37,7 +42,8 @@ const getBlog = async (req, res, next) => {
 const createBlog = async (req, res, next) => {
   try {
     const { body } = req;
-    const newBlog = Blog.create(body);
+    const { id } = req.user;
+    const newBlog = Blog({ ...body, authorId: id });
     const blog = await newBlog.save();
     res.status(201).json({
       status: 'success',
@@ -62,9 +68,9 @@ const updateBlog = async (req, res, next) => {
 
     // blog.set(body)
 
-    blog.title = body.title;
-    blog.content = body.content;
-    blog.imgLink = body.imgLink;
+    blog.title = body.title || blog.title;
+    blog.content = body.content || blog.content;
+    blog.imgLink = body.imgLink || blog.imgLink;
 
     const updatedBlog = await blog.save();
     res.status(200).json({
@@ -86,11 +92,10 @@ const deleteBlog = async (req, res, next) => {
       const error = new NotFoundError('Blog not found');
       return next(error);
     }
-    await Blog.deleteOne({ id });
+    await Blog.deleteOne({ _id: id });
     res.status(200).json({
       status: 'success',
       message: 'Blog deleted successfully',
-      data: blog,
     });
   } catch (error) {
     console.error(error);
