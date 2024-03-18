@@ -19,6 +19,7 @@ const studentSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
+      unique: true,
     },
     password: {
       type: String,
@@ -33,14 +34,14 @@ studentSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-studentSchema.methods.isValidPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+// studentSchema.methods.isValidPassword = async function (password) {
+//   return await bcrypt.compare(password, this.password);
+// };
 
-studentSchema.methods.generateToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
-  });
-};
+// studentSchema.methods.generateToken = function () {
+//   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+//     expiresIn: '30d',
+//   });
+// };
 
 module.exports = mongoose.model('Student', studentSchema);
