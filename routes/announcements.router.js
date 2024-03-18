@@ -6,12 +6,16 @@ const {
   updateAnnouncement,
   deleteAnnouncement,
 } = require('../controllers/announcements.controller');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
-router.route('/').get(getAllAnnouncements).post(createAnnouncement);
+router
+  .route('/')
+  .get(getAllAnnouncements)
+  .post(adminMiddleware, createAnnouncement);
 router
   .route('/:id')
   .get(getAnnouncement)
-  .patch(updateAnnouncement)
-  .delete(deleteAnnouncement);
+  .patch(adminMiddleware, updateAnnouncement)
+  .delete(adminMiddleware, deleteAnnouncement);
 
 module.exports = router;

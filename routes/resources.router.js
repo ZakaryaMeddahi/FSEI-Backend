@@ -6,8 +6,13 @@ const {
   updateResource,
   deleteResource,
 } = require('../controllers/resources.controller');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
-router.route('/').get(getAllResources).post(createResource);
-router.route('/:id').get(getResource).patch(updateResource).delete(deleteResource);
+router.route('/').get(getAllResources).post(adminMiddleware, createResource);
+router
+  .route('/:id')
+  .get(getResource)
+  .patch(adminMiddleware, updateResource)
+  .delete(adminMiddleware, deleteResource);
 
 module.exports = router;

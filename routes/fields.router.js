@@ -20,22 +20,33 @@ const {
   updatePlanning,
   deletePlanning,
 } = require('../controllers/plannings.controller');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
-router.route('/').get(getAllFields).post(createField);
-router.route('/:id').get(getField).patch(updateField).delete(deleteField);
+router.route('/').get(getAllFields).post(adminMiddleware, createField);
+router
+  .route('/:id')
+  .get(getField)
+  .patch(adminMiddleware, updateField)
+  .delete(adminMiddleware, deleteField);
 
-router.route('/:fieldId/modules').get(getAllModules).post(createModule);
+router
+  .route('/:fieldId/modules')
+  .get(getAllModules)
+  .post(adminMiddleware, createModule);
 router
   .route('/:fieldId/modules/:id')
   .get(getModule)
-  .patch(updateModule)
-  .delete(deleteModule);
+  .patch(adminMiddleware, updateModule)
+  .delete(adminMiddleware, deleteModule);
 
-router.route('/:fieldId/plannings').get(getAllPlannings).post(createPlanning);
+router
+  .route('/:fieldId/plannings')
+  .get(getAllPlannings)
+  .post(adminMiddleware, createPlanning);
 router
   .route('/:fieldId/plannings/:id')
   .get(getPlanning)
-  .patch(updatePlanning)
-  .delete(deletePlanning);
+  .patch(adminMiddleware, updatePlanning)
+  .delete(adminMiddleware, deletePlanning);
 
 module.exports = router;

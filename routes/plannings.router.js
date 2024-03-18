@@ -6,12 +6,13 @@ const {
   updatePlanning,
   deletePlanning,
 } = require('../controllers/plannings.controller');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
-router.route('/').get(getAllPlannings).post(createPlanning);
+router.route('/').get(getAllPlannings).post(adminMiddleware, createPlanning);
 router
   .route('/:id')
   .get(getPlanning)
-  .patch(updatePlanning)
-  .delete(deletePlanning);
+  .patch(adminMiddleware, updatePlanning)
+  .delete(adminMiddleware, deletePlanning);
 
 module.exports = router;
