@@ -8,7 +8,7 @@ const resourceSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['course', 'exam'],
+      enum: ['cours', 'exam'],
       required: [true, 'Resource type is required'],
     },
     link: {
@@ -19,6 +19,11 @@ const resourceSchema = new mongoose.Schema(
       type: String,
       enum: ['L1', 'L2', 'L3', 'M1', 'M2'],
       required: [true, 'Resource level is required'],
+    },
+    moduleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Module',
+      required: [true, 'Module ID is required'],
     },
     // authorId: {
     //   type: mongoose.Schema.Types.ObjectId,

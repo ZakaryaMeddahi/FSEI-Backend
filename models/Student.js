@@ -9,7 +9,7 @@ const studentSchema = new mongoose.Schema(
       required: [true, 'firstName is required'],
     },
     lastName: {
-      type: Number,
+      type: String,
       required: [true, 'lastName is required'],
     },
     registrationNumber: {
