@@ -5,7 +5,8 @@ const getAllResources = async (req, res, next) => {
   try {
     const { moduleId } = req.params;
     console.log(moduleId);
-    const resources = await Resource.find({ moduleId });
+    queryParams = moduleId ? { moduleId } : {};
+    const resources = await Resource.find(queryParams);
     res.status(200).json({
       status: 'success',
       message: 'Resources retrieved successfully',

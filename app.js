@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const connectDB = require('./db/connect');
+const { NotFoundError } = require('./utils/errors');
 
 const app = express();
 
@@ -20,8 +21,7 @@ const blogsRouter = require('./routes/blogs.router');
 const fieldsRouter = require('./routes/fields.router');
 const modulesRouter = require('./routes/modules.router');
 const announcementRouter = require('./routes/announcements.router');
-const { NotFoundError } = require('./utils/errors');
-// const resourcesRouter = require('./routes/resources.router');
+const resourcesRouter = require('./routes/resources.router');
 // const planningsRoute = require('./routes/plannings.router');
 
 // Constants
@@ -44,7 +44,7 @@ app.use('/api/v1/fields', authMiddleware, fieldsRouter);
 app.use('/api/v1/modules', authMiddleware, modulesRouter);
 // app.use('/api/v1/fields/:fieldId/modules', modulesRouter);
 // app.use('/api/v1/fields/:fieldId/plannings', planningsRoute);
-// app.use('/api/v1/modules/:moduleId/resources', resourcesRouter);
+app.use('/api/v1/resources', resourcesRouter);
 app.use('/api/v1/announcements', authMiddleware, announcementRouter);
 
 app.get('*', (req, res, next) => {
