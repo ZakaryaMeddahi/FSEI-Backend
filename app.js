@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config();
+const cors = require('cors');
 const connectDB = require('./db/connect');
 
 const app = express();
@@ -28,12 +29,14 @@ const PORT = process.env.PORT || 8080;
 const URI = process.env.MONGO_URI;
 
 // Middlewares
+app.use(cors()); // Use the cors middleware
 app.use(express.json());
 
 // Routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/account', authMiddleware, accountRouter);
-app.use('/api/v1/admins', authMiddleware, adminMiddleware, adminsRouter);
+// app.use('/api/v1/admins', authMiddleware, adminMiddleware, adminsRouter);
+app.use('/api/v1/admins', adminsRouter);
 app.use('/api/v1/students', authMiddleware, adminMiddleware, studentsRouter);
 app.use('/api/v1/projects', authMiddleware, projectsRouter);
 app.use('/api/v1/blogs', authMiddleware, blogsRouter);
@@ -45,17 +48,17 @@ app.use('/api/v1/modules', authMiddleware, modulesRouter);
 app.use('/api/v1/announcements', authMiddleware, announcementRouter);
 
 app.get('*', (req, res, next) => {
-  const error = new NotFoundError('Route not found');
-  next(error);
+    const error = new NotFoundError('Route not found');
+    next(error);
 });
 
 app.use(errorHandler);
 
 app.listen(PORT, async () => {
-  try {
-    await connectDB(URI);
-    console.log(`Server is running on port ${PORT}`);
-  } catch (error) {
-    console.error(error);
-  }
+    try {
+        await connectDB(URI);
+        console.log(`Server is running on port ${PORT}`);
+    } catch (error) {
+        console.error(error);
+    }
 });
